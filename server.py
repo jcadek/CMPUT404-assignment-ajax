@@ -22,7 +22,7 @@
 
 
 import flask
-from flask import Flask, request
+from flask import Flask, request, redirect
 import json
 app = Flask(__name__)
 app.debug = True
@@ -43,9 +43,11 @@ class World:
         self.space[entity] = entry
 
     def set(self, entity, data):
+
         self.space[entity] = data
 
     def clear(self):
+
         self.space = dict()
 
     def get(self, entity):
@@ -73,28 +75,55 @@ def flask_post_json():
 
 @app.route("/")
 def hello():
-    '''Return something coherent here.. perhaps redirect to /static/index.html '''
-    return None
+ 
+    return redirect("http://127.0.0.1:5000/static/index.html", code=302)
 
 @app.route("/entity/<entity>", methods=['POST','PUT'])
 def update(entity):
-    '''update the entities via this interface'''
-    return None
+    entity = entity
+    props = flask_post_json();
+    
+    myWorld.update(entity, 'x', props["x"]);
+    myWorld.update(entity, 'y', props["y"]);
+    try:
+    	myWorld.update(entity, "colour", props["colour"]);
+    except:
+	myWorld.update(entity, "colour", "red");
+    try:
+    	myWorld.update(entity, "radius", props["radius"]);
+    except:
+	myWorld.update(entity, "radius", 50);
+    coord = myWorld.get(entity);
+    result = {};
+    result[entity] = coord;
+    if(len(coord) == 0):
+	return json.dumps({})
+    else:
+   	return json.dumps(result)
+    
 
 @app.route("/world", methods=['POST','GET'])    
 def world():
-    '''you should probably return the world here'''
-    return None
+    w = json.dumps(myWorld.world())
+   
+    return w
 
 @app.route("/entity/<entity>")    
-def get_entity(entity):
-    '''This is the GET version of the entity interface, return a representation of the entity'''
-    return None
+def get_entity(entity): 
+  
+    coord = myWorld.get(entity);
+   
+    result = {};
+    result[entity] = coord
+    if(len(coord) == 0):
+	return json.dumps({})
+    else:
+   	return json.dumps(result)
 
 @app.route("/clear", methods=['POST','GET'])
 def clear():
-    '''Clear the world out!'''
-    return None
+   
+    return json.dumps(myWorld.clear())
 
 if __name__ == "__main__":
     app.run()
