@@ -82,25 +82,9 @@ def hello():
 def update(entity):
     entity = entity
     props = flask_post_json();
-    
-    myWorld.update(entity, 'x', props["x"]);
-    myWorld.update(entity, 'y', props["y"]);
-    try:
-    	myWorld.update(entity, "colour", props["colour"]);
-    except:
-	myWorld.update(entity, "colour", "red");
-    try:
-    	myWorld.update(entity, "radius", props["radius"]);
-    except:
-	myWorld.update(entity, "radius", 50);
-    coord = myWorld.get(entity);
-    result = {};
-    result[entity] = coord;
-    if(len(coord) == 0):
-	return json.dumps({})
-    else:
-   	return json.dumps(result)
-    
+    myWorld.set(entity, props);
+  
+    return json.dumps(props);
 
 @app.route("/world", methods=['POST','GET'])    
 def world():
@@ -110,15 +94,10 @@ def world():
 
 @app.route("/entity/<entity>")    
 def get_entity(entity): 
-  
+  	
     coord = myWorld.get(entity);
-   
-    result = {};
-    result[entity] = coord
-    if(len(coord) == 0):
-	return json.dumps({})
-    else:
-   	return json.dumps(result)
+    return json.dumps(coord)
+  
 
 @app.route("/clear", methods=['POST','GET'])
 def clear():

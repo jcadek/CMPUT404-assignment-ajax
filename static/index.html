@@ -288,18 +288,25 @@ mouse.mouseuppers.push(function(x,y,clicked,e) {
 });
 
 mouse.mousedraggers.push(function(x,y,clicked,e) {
-    addEntityWithoutName({'x':x,'y':y,'colour':'green',
-                          'radius':10});
+    var r = Math.floor((Math.random()*5)+1);
+    var p =pickColour();
+  
+    addEntityWithoutName({'x':x,'y':y,'colour':p,
+                          'radius':r});
 });
 
-
+function pickColour() {
+	var colours = ["AliceBlue","AntiqueWhite","Aqua","Aquamarine","Azure"];
+	var c = "#" + Math.floor((Math.random()*256)).toString(16) + Math.floor((Math.random()*256)).toString(16) + Math.floor((Math.random()*256)).toString(16);
+	return c
+}
 function update() {
     sendJSONXMLHTTPRequest("http://127.0.0.1:5000/world", null, importEntity);
     drawFrame();
 }
 
 // 30 frames per second
-setInterval( update, 1000);
+setInterval( update, 100);
 
 
 
